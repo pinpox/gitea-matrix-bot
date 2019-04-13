@@ -1,4 +1,4 @@
-# gitea-matrix-bot
+# gitea-matrix-bot (WORK IN PROGRESS, ALPHA!)
 
 A bot to listen for [gitea](https://gitea.io) webhooks and post to a [matrix](https://matrix.org) channel
 
