@@ -8,7 +8,7 @@ A bot to listen for gitea webhooks and post to a matrix channel
 Copy config.ini.example to config.ini or creat a file called config.ini with the
 following options:
 
-```
+```ini
 [http]
 # The path the listener will expect the post data
 http_uri = "/post"
