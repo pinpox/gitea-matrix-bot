@@ -43,13 +43,11 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 
 		json.Unmarshal(body, &postData)
 
-		// fmt.Println(string(body))
-
 		fmt.Printf("%+v\n", postData)
 		fmt.Println("=================================================")
 		spew.Dump(postData)
 		fmt.Println("=================================================")
-
+		fmt.Println(string(body))
 		fmt.Println("=================================================")
 		fmt.Println(generateMessage(postData, r.Header.Get("X-Gitea-Event")))
 		fmt.Println("=================================================")
@@ -80,7 +78,7 @@ func generateMessage(data GiteaPostData, eventHeader string) string {
 	case "issues":
 		switch data.Action {
 		case "assigned":
-			templ.Parse("{{.Repository.FullName}}: {{.Sender.FullName}} assigned issue #{{.Issue.Number}} {{.Issue.Title}} to  TODO ")
+			templ.Parse("{{.Repository.FullName}}: {{.Sender.FullName}} assigned issue #{{.Issue.Number}} {{.Issue.Title}} to  {{}} ")
 		case "closed":
 			templ.Parse("{{.Repository.FullName}}: {{.Sender.FullName}} closed issue #{{.Issue.Number}} {{.Issue.Title}}")
 		case "demilestoned":
@@ -104,47 +102,40 @@ func generateMessage(data GiteaPostData, eventHeader string) string {
 		}
 
 	case "fork":
-		// switch data.Action {
-		// case "created":
 		templ.Parse("{{.Sender.FullName}} forked repository {{.Repository.Parent.FullName}} to {{.Repository.FullName}}")
-		// case "edited":
-		// templ.Parse("{{.Sender.FullName}} edited repository fork {{}}")
-		// case "deleted":
-		// templ.Parse("{{.Sender.FullName}} deleted repository fork {{}}")
-		// }
 
 	case "pull_request":
 		switch data.Action {
 		case "assigned":
-			templ.Parse("{{.Repository.FullName}}: {{.Sender.FullName}} assigned pull-request {{}} {{}} to {{}}")
+			templ.Parse("{{.Repository.FullName}}: {{.Sender.FullName}} assigned pull-request #{{.PullRequest.Number}} \"{{.PullRequest.Title}}\" to {{.PullRequest.Assignee.FullName}}")
 		case "closed":
-			templ.Parse("{{.Repository.FullName}}: {{.Sender.FullName}} closed pull-request {{}} {{}}")
+			templ.Parse("{{.Repository.FullName}}: {{.Sender.FullName}} closed pull-request #{{.PullRequest.Number}} \"{{.PullRequest.Title}}\"")
 		case "demilestoned":
-			templ.Parse("{{.Repository.FullName}}: {{.Sender.FullName}} removed milestone TODO from pull-request {{}} {{}}")
+			templ.Parse("{{.Repository.FullName}}: {{.Sender.FullName}} removed milestone TODO from pull-request #{{.PullRequest.Number}} \"{{.PullRequest.Title}}\"")
 		case "edited":
-			templ.Parse("{{.Repository.FullName}}: {{.Sender.FullName}} edited pull-request {{}} {{}}")
+			templ.Parse("{{.Repository.FullName}}: {{.Sender.FullName}} edited pull-request #{{.PullRequest.Number}} \"{{.PullRequest.Title}}\"")
 		case "label_cleared":
-			templ.Parse("{{.Repository.FullName}}: {{.Sender.FullName}} removed labels from pull-request {{}} {{}}")
+			templ.Parse("{{.Repository.FullName}}: {{.Sender.FullName}} removed labels from pull-request #{{.PullRequest.Number}} \"{{.PullRequest.Title}}\"")
 		case "label_updated":
-			templ.Parse("{{.Repository.FullName}}: {{.Sender.FullName}} updated labels from pull-request {{}} {{}}")
+			templ.Parse("{{.Repository.FullName}}: {{.Sender.FullName}} updated labels from pull-request #{{.PullRequest.Number}} \"{{.PullRequest.Title}}\"")
 		case "milestoned":
-			templ.Parse("{{.Repository.FullName}}: {{.Sender.FullName}} added pull-request {{}} {{}} to milestone TODO")
+			templ.Parse("{{.Repository.FullName}}: {{.Sender.FullName}} added pull-request #{{.PullRequest.Number}} \"{{.PullRequest.Title}}\" to milestone TODO")
 		case "opened":
-			templ.Parse("{{.Repository.FullName}}: {{.Sender.FullName}} opened pull-request {{}} {{}}")
+			templ.Parse("{{.Repository.FullName}}: {{.Sender.FullName}} opened pull-request #{{.PullRequest.Number}} \"{{.PullRequest.Title}}\"")
 		case "reopened":
-			templ.Parse("{{.Repository.FullName}}: {{.Sender.FullName}} re-opened pull-request {{}} {{}}")
+			templ.Parse("{{.Repository.FullName}}: {{.Sender.FullName}} re-opened pull-request #{{.PullRequest.Number}} \"{{.PullRequest.Title}}\"")
 		case "synchronized":
-			templ.Parse("{{.Repository.FullName}}: {{.Sender.FullName}} synchronized pull-request {{}} {{}}")
+			templ.Parse("{{.Repository.FullName}}: {{.Sender.FullName}} synchronized pull-request #{{.PullRequest.Number}} \"{{.PullRequest.Title}}\"")
 		case "unassigned":
-			templ.Parse("{{.Repository.FullName}}: {{.Sender.FullName}} removed assinee {{}} from pull-request {{}} {{}}")
+			templ.Parse("{{.Repository.FullName}}: {{.Sender.FullName}} removed assinee from pull-request #{{.PullRequest.Number}} \"{{.PullRequest.Title}}\"")
 		}
 
 	case "issue_comment":
 		switch data.Action {
 		case "created":
-			templ.Parse("{{.Sender.FullName}} commented issue #{{.Issue.Number}} {{.Issue.Title}}: {{.Comment.Body}}")
+			templ.Parse("{{.Sender.FullName}} commented on #{{.Issue.Number}} {{.Issue.Title}}: {{.Comment.Body}}")
 		case "deleted":
-			templ.Parse("{{.Sender.FullName}} deleted commented on issue #{{.Issue.Number}} {{.Issue.Title}}")
+			templ.Parse("{{.Sender.FullName}} deleted commented on #{{.Issue.Number}} {{.Issue.Title}}")
 		}
 
 	case "repository":
@@ -166,11 +157,11 @@ func generateMessage(data GiteaPostData, eventHeader string) string {
 		}
 
 	case "pull_request_approved":
-		templ.Parse("{{.Repository.FullName}}: {{.Sender.FullName}} approved pull request {{}}{{}}")
+		templ.Parse("{{.Repository.FullName}}: {{.Sender.FullName}} approved pull request #{{.PullRequest.Number}} \"{{.PullRequest.Title}}\"")
 	case "pull_request_rejected":
-		templ.Parse("{{.Repository.FullName}}: {{.Sender.FullName}} rejected pull request {{}}{{}}")
+		templ.Parse("{{.Repository.FullName}}: {{.Sender.FullName}} rejected pull request  #{{.PullRequest.Number}} \"{{.PullRequest.Title}}\"")
 	case "pull_request_comment":
-		templ.Parse("{{.Repository.FullName}}: {{.Sender.FullName}} commented on pull request {{}}{{}}: {{.Comment.Body}}")
+		templ.Parse("{{.Repository.FullName}}: {{.Sender.FullName}} commented on pull request #{{.PullRequest.Number}} \"{{.PullRequest.Title}}\": {{.Comment.Body}}")
 	default:
 
 		fmt.Println("Unknown action: " + eventHeader + " " + data.Action)
