@@ -1,6 +1,6 @@
 # gitea-matrix-bot
 
-A bot to listen for gitea webhooks and post to a matrix channel
+A bot to listen for [gitea](https://gitea.io) webhooks and post to a [matrix](https://matrix.org) channel
 
 # Usage
 
