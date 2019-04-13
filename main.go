@@ -67,6 +67,8 @@ func main() {
 	// }
 	// fmt.Println("Sending a message")
 	// _, err = cli.SendText(roomID, "test message 0")
+	// TODO maybe notice is better?
+	// func (cli *Client) SendNotice(roomID, text string) (*RespSendEvent, error)
 	// if err != nil {
 	// 	panic(err)
 
