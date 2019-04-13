@@ -1,3 +1,10 @@
+[![Build Status](https://travis-ci.org/binaryplease/gitea-matrix-bot.svg?branch=master)](https://travis-ci.org/binaryplease/gitea-matrix-bot)
+[![GoDoc](https://godoc.org/github.com/binaryplease/gitea-matrix-bot?status.svg)](https://godoc.org/github.com/binaryplease/gitea-matrix-bot)
+[![Go Report Card](https://goreportcard.com/badge/github.com/binaryplease/gitea-matrix-bot)](https://goreportcard.com/report/github.com/binaryplease/gitea-matrix-bot)
+[![codecov](https://codecov.io/gh/binaryplease/gitea-matrix-bot/branch/master/graph/badge.svg)](https://codecov.io/gh/binaryplease/gitea-matrix-bot)
+
+
+
 # gitea-matrix-bot (WORK IN PROGRESS, ALPHA!)
 
 A bot to listen for [gitea](https://gitea.io) webhooks and post to a [matrix](https://matrix.org) channel
