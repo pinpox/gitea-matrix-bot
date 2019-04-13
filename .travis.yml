@@ -1,0 +1,23 @@
+sudo: false
+
+language: go
+
+go:
+ - master
+
+# Required for coverage, and testing.
+#before_install:
+# - go get golang.org/x/tools/cmd/cover
+ #- go get github.com/mattn/goveralls
+
+script:
+ - go build -x -v ./cmd/main.go
+ - go test -race -coverprofile=coverage.txt -covermode=atomic -a -x -v *.go
+
+notifications:
+  email:
+    recipients:
+      - pablo1@mailbox.org
+ 
+after_success:
+ - bash <(curl -s https://codecov.io/bash)
