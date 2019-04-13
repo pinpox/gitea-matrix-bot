@@ -44,5 +44,5 @@ add a default webhook that will apply to all you repos (recommended)
 - Set `POST Content Type` to `applicatino/json`
 - Add a secret (passphrase, password)
 
-It will probably like this:
+It will probably look like this:
 ![gitea scrot](./gitea-scrot.png "Gitea Screenshot")
