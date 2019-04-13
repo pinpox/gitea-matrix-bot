@@ -10,17 +10,6 @@ import (
 
 // import "net/http"
 
-//TODO get this vals from config file
-// var (
-// flagPort is the open port the application listens on
-// flagPort   = flag.String("port", "9000", "Port to listen on")
-// matrixPass = "oSaiNahqu5ahF5jieBe2UKok"
-// matrixUser = "reminder-bot"
-// matrixHost = "http://matrix.org"
-
-// postURI = "/post"
-// )
-
 var cfg *ini.File
 var err error
 
