@@ -2,10 +2,12 @@ package main
 
 import (
 	"fmt"
+	"github.com/binaryplease/matrix-bot"
 )
 
+//GiteaBot is the main struct to hold the bot
 type GiteaBot struct {
-	*MatrixBot
+	*matrixbot.MatrixBot
 	Subscriptions map[string][]string
 }
 
@@ -19,11 +21,21 @@ func (gb *GiteaBot) SendMessageToRooms(repo, message string) {
 	}
 }
 
+func contains(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
+}
+
+//NewGiteaBot creates a new bot form user credentials
 func NewGiteaBot(user, pass string) *GiteaBot {
 
 	subs := make(map[string][]string)
 
-	bot, err := NewMatrixBot(user, pass)
+	bot, err := matrixbot.NewMatrixBot(user, pass)
 
 	if err != nil {
 		panic(err)
@@ -38,6 +50,7 @@ func NewGiteaBot(user, pass string) *GiteaBot {
 	bot.RegisterCommand("!unsub", 0, gbot.handleCommandRemoveSub)
 	bot.RegisterCommand("!listsubs", 0, gbot.handleCommandListSubs)
 	bot.RegisterCommand("!help", 0, gbot.handleCommandHelp)
+
 	return gbot
 
 }

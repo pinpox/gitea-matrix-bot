@@ -6,14 +6,13 @@ import (
 	"os"
 )
 
-// import "net/http"
-
 var cfg *ini.File
 var err error
 var mygiteabot *GiteaBot
 
 func init() {
-	//Lonad config
+
+	//Load config
 	cfg, err = ini.Load("config.ini")
 	if err != nil {
 		fmt.Printf("Fail to read file: %v", err)
@@ -22,9 +21,7 @@ func init() {
 
 	matrixUser := cfg.Section("matrix").Key("matrix_user").String()
 	matrixPass := cfg.Section("matrix").Key("matrix_pass").String()
-	// botDB := cfg.Section("bot").Key("").String()
 
-	fmt.Println("Creating Bot")
 	mygiteabot = NewGiteaBot(matrixUser, matrixPass)
 
 	if err != nil {
