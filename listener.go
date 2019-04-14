@@ -50,7 +50,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(string(body))
 		fmt.Println("=================================================")
 		message := generateMessage(postData, r.Header.Get("X-Gitea-Event"))
-		bot.SendMessageToRooms(postData.Repository.Name, message)
+		mygiteabot.SendMessageToRooms(postData.Repository.Name, message)
 
 		fmt.Println("=================================================")
 		fmt.Fprint(w, "POST done")

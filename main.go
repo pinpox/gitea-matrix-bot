@@ -10,7 +10,7 @@ import (
 
 var cfg *ini.File
 var err error
-var bot *GiteaBot
+var mygiteabot *GiteaBot
 
 func init() {
 	//Lonad config
@@ -25,7 +25,7 @@ func init() {
 	// botDB := cfg.Section("bot").Key("").String()
 
 	fmt.Println("Creating Bot")
-	bot, err = NewGiteaBot(matrixUser, matrixPass)
+	mygiteabot = NewGiteaBot(matrixUser, matrixPass)
 
 	if err != nil {
 		panic(err)

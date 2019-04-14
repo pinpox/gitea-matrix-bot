@@ -7,16 +7,42 @@ import (
 	"strings"
 )
 
-//GiteaBot struct to hold the bot and it's methods
-type GiteaBot struct {
+//MatrixBot struct to hold the bot and it's methods
+type MatrixBot struct {
 	//Map a repository to matrix rooms
-	Subscriptions map[string][]string
-	Client        *gomatrix.Client
-	matrixPass    string
-	matrixUser    string
+	Client     *gomatrix.Client
+	matrixPass string
+	matrixUser string
+	Handlers   []MatrixBotCommandHandler
 }
 
-func (gb *GiteaBot) handleCommands(message, room, sender string) {
+type MatrixBotCommandHandler struct {
+	//The pattern or command to handle
+	Pattern string
+
+	//The minimal power requeired to execute this command
+	MinPower int
+
+	//The function to handle this command
+	Handler func(message, room, sender string)
+}
+
+func (gb *MatrixBot) getSenderPower(sender string) int {
+	//TODO
+	return 100
+}
+
+func (gb *MatrixBot) RegisterCommand(pattern string, minpower int, handler func(message string, room string, sender string)) {
+	mbch := MatrixBotCommandHandler{
+		Pattern:  pattern,
+		MinPower: minpower,
+		Handler:  handler,
+	}
+	fmt.Println("Registered command: " + pattern)
+	gb.Handlers = append(gb.Handlers, mbch)
+}
+
+func (gb *MatrixBot) handleCommands(message, room, sender string) {
 
 	//Don't do anything if the sender is the bot itself
 	//TODO edge-case: bot has the same name as a user but on a different server
@@ -24,160 +50,37 @@ func (gb *GiteaBot) handleCommands(message, room, sender string) {
 		return
 	}
 
-	//Admin commands
-	if gb.isAdmin(sender) {
-
-		//Add a subsription
-		rAddSub, _ := regexp.Compile("!sub")
-		if rAddSub.MatchString(message) {
-			repo := message[5:]
-			fmt.Println("You want " + room + " to subscribe to '" + repo + "'")
-			gb.handleCommandAddSub(room, repo)
-			return
-		}
-
-		//Remove a subscription
-		rRemoveSub, _ := regexp.Compile("!unsub .*")
-		if rRemoveSub.MatchString(message) {
-			repo := message[7:]
-			fmt.Println("You want " + room + " to un-subscribe from " + repo)
-			gb.handleCommandRemoveSub(room, repo)
-			return
-		}
-
-		//List room subs
-		rListSubs, _ := regexp.Compile("!listsubs")
-		if rListSubs.MatchString(message) {
-			fmt.Println("You want to list subs")
-			gb.handleCommandListSubs(room)
-			return
-		}
-	}
-
-	//Non-Admin commands
-
-	//Get help
-	rHelp, _ := regexp.Compile("!help")
-	if rHelp.MatchString(message) {
-		fmt.Println("You want to get help")
-		gb.handleCommandHelp(room)
-		return
-	}
-}
-
-func (gb GiteaBot) isAdmin(user string) bool {
-	//TODO check if admin
-	//Check for power in room
-	return true
-}
-
-func (gb *GiteaBot) handleCommandListSubs(room string) {
-
-	repos := ""
-
-	for k, repo := range gb.Subscriptions {
-		for _, subscriber := range repo {
-			if subscriber == room {
-				repos = repos + "\n -" + k
+	for _, v := range gb.Handlers {
+		r, _ := regexp.Compile(v.Pattern)
+		if r.MatchString(message) {
+			if v.MinPower <= gb.getSenderPower(sender) {
+				v.Handler(message, room, sender)
+			} else {
+				gb.SendToRoom(room, "You have not enough power to execute this command ("+v.Pattern+"). Your power: "+string(gb.getSenderPower(sender))+", requeired: "+string(v.MinPower))
 			}
 		}
-	}
-
-	if repos == "" {
-		gb.SendToRoom(room, "This room has not subscribed to any repositorys.")
-	} else {
-		msg := "This room has is subscribed to the following repositorys:" + repos
-		gb.SendToRoom(room, msg)
 	}
 }
 
 func contains(s []string, e string) bool {
 	for _, a := range s {
 		if a == e {
-			fmt.Println("Founteeeeeeeeeeee")
-
 			return true
-		} else {
-			fmt.Println("'" + a + "' not equal to '" + e + "'")
 		}
 	}
 	return false
 }
 
-func (gb *GiteaBot) handleCommandAddSub(room, repo string) {
-	if !contains(gb.Subscriptions[repo], room) {
-		gb.Subscriptions[repo] = append(gb.Subscriptions[repo], room)
-		gb.SendToRoom(room, "Subscribed to: "+repo)
-	} else {
-		gb.SendToRoom(room, "This room has already subscribed to: "+repo)
-	}
-}
-
-func (gb *GiteaBot) handleCommandRemoveSub(room, repo string) {
-	fmt.Println(gb.Subscriptions[repo])
-
-	if contains(gb.Subscriptions[repo], room) {
-
-		var tmp []string
-
-		for _, v := range gb.Subscriptions[repo] {
-			if v != room {
-				fmt.Println("readding '" + v + "'" + "because it is not equal to '" + room + "'")
-				tmp = append(tmp, v)
-			} else {
-				gb.SendToRoom(room, "Un-subscribed from: "+repo)
-			}
-		}
-		gb.Subscriptions[repo] = tmp
-	} else {
-		gb.SendToRoom(room, "This room has not subscribed to: "+repo)
-	}
-
-}
-
-func (gb *GiteaBot) handleCommandHelp(room string) {
-	helpMsg := `
-
-I'm your friendly Gitea Bot!
-
-You can invite me to any matrix room to get updates on subscribed gitea repositorys.
-The following commands are avaitible:
-
-!sub user/repo       Subscribe to a repository
-!unsub user/repo     Remove subscription to a repository
-!listsubs            List the room's subscriptions
-!help                Display this message
-
-Some of the commands might require admin powers!
-
-`
-	gb.SendToRoom(room, helpMsg)
-}
-
-func (gb *GiteaBot) login() {
-
-}
-
 //SendToRoom sends a message to a specified room
-func (gb *GiteaBot) SendToRoom(room, message string) {
+func (gb *MatrixBot) SendToRoom(room, message string) {
 	_, err = gb.Client.SendText(room, message)
 	if err != nil {
 		panic(err)
 	}
 }
 
-//SendMessageToRooms sends a message to all roomes that have subscribed to the repo
-func (gb *GiteaBot) SendMessageToRooms(repo, message string) {
-	for _, v := range gb.Subscriptions[repo] {
-		_, err = gb.Client.SendText(v, message)
-		if err != nil {
-			panic(err)
-		}
-	}
-}
-
 //NewGiteaBot creates a new bot form user credentials
-func NewGiteaBot(user, pass string) (*GiteaBot, error) {
+func NewMatrixBot(user, pass string) (*MatrixBot, error) {
 
 	fmt.Println("Logging in")
 
@@ -195,11 +98,10 @@ func NewGiteaBot(user, pass string) (*GiteaBot, error) {
 
 	cli.SetCredentials(resp.UserID, resp.AccessToken)
 
-	bot := &GiteaBot{
-		matrixPass:    pass,
-		matrixUser:    user,
-		Subscriptions: make(map[string][]string),
-		Client:        cli,
+	bot := &MatrixBot{
+		matrixPass: pass,
+		matrixUser: user,
+		Client:     cli,
 	}
 
 	//Setup Syncer and to handle events
