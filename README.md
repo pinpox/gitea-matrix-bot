@@ -27,9 +27,6 @@ http_port = "9000"
 # The matrix server to connect to
 matrix_host = "http://matrix.org"
 
-# The matrix room to post to
-matrix_room = "#my-awesome-room:matrix.org"
-
 # User credentions of the bot for posting to the room
 matrix_pass = "supersecretpass"
 matrix_user = "my-awesome-bot"
