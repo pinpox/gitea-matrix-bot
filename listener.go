@@ -49,7 +49,9 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("=================================================")
 		fmt.Println(string(body))
 		fmt.Println("=================================================")
-		fmt.Println(generateMessage(postData, r.Header.Get("X-Gitea-Event")))
+		message := generateMessage(postData, r.Header.Get("X-Gitea-Event"))
+		bot.SendMessageToRooms(postData.Repository.Name, message)
+
 		fmt.Println("=================================================")
 		fmt.Fprint(w, "POST done")
 	} else {
