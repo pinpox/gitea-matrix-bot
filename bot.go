@@ -72,7 +72,21 @@ func (gb GiteaBot) isAdmin(user string) bool {
 }
 
 func (gb *GiteaBot) handleCommandListSubs(room string) {
-	gb.SendToRoom(room, "Not implemented yet")
+
+	if len(gb.Subscriptions) == 0 {
+		gb.SendToRoom(room, "This room has not subscribed to any repositorys.")
+		return
+	}
+
+	msg := "This room has is subscribed to the following repositorys:"
+	for k, repo := range gb.Subscriptions {
+		for _, subscriber := range repo {
+			if subscriber == room {
+				msg = msg + "\n -" + k
+			}
+		}
+	}
+	gb.SendToRoom(room, msg)
 }
 
 func (gb *GiteaBot) handleCommandAddSub(room, repo string) {
@@ -118,7 +132,7 @@ func (gb *GiteaBot) SendToRoom(room, message string) {
 	}
 }
 
-//SendMessageToRooms sends a message to all romes that have subscribed to the repo
+//SendMessageToRooms sends a message to all roomes that have subscribed to the repo
 func (gb *GiteaBot) SendMessageToRooms(repo, message string) {
 	for _, v := range gb.Subscriptions[repo] {
 		_, err = gb.Client.SendText(v, message)
