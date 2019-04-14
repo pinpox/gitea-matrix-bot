@@ -30,8 +30,8 @@ func (gb *GiteaBot) handleCommands(message, room, sender string) {
 		//Add a subsription
 		rAddSub, _ := regexp.Compile("!sub")
 		if rAddSub.MatchString(message) {
-			repo := message[4:]
-			fmt.Println("You want " + room + " to subscribe to" + repo)
+			repo := message[5:]
+			fmt.Println("You want " + room + " to subscribe to '" + repo + "'")
 			gb.handleCommandAddSub(room, repo)
 			return
 		}
@@ -39,7 +39,7 @@ func (gb *GiteaBot) handleCommands(message, room, sender string) {
 		//Remove a subscription
 		rRemoveSub, _ := regexp.Compile("!unsub .*")
 		if rRemoveSub.MatchString(message) {
-			repo := message[6:]
+			repo := message[7:]
 			fmt.Println("You want " + room + " to un-subscribe from " + repo)
 			gb.handleCommandRemoveSub(room, repo)
 			return
@@ -73,26 +73,32 @@ func (gb GiteaBot) isAdmin(user string) bool {
 
 func (gb *GiteaBot) handleCommandListSubs(room string) {
 
-	if len(gb.Subscriptions) == 0 {
-		gb.SendToRoom(room, "This room has not subscribed to any repositorys.")
-		return
-	}
+	repos := ""
 
-	msg := "This room has is subscribed to the following repositorys:"
 	for k, repo := range gb.Subscriptions {
 		for _, subscriber := range repo {
 			if subscriber == room {
-				msg = msg + "\n -" + k
+				repos = repos + "\n -" + k
 			}
 		}
 	}
-	gb.SendToRoom(room, msg)
+
+	if repos == "" {
+		gb.SendToRoom(room, "This room has not subscribed to any repositorys.")
+	} else {
+		msg := "This room has is subscribed to the following repositorys:" + repos
+		gb.SendToRoom(room, msg)
+	}
 }
 
 func contains(s []string, e string) bool {
 	for _, a := range s {
 		if a == e {
+			fmt.Println("Founteeeeeeeeeeee")
+
 			return true
+		} else {
+			fmt.Println("'" + a + "' not equal to '" + e + "'")
 		}
 	}
 	return false
@@ -101,15 +107,32 @@ func contains(s []string, e string) bool {
 func (gb *GiteaBot) handleCommandAddSub(room, repo string) {
 	if !contains(gb.Subscriptions[repo], room) {
 		gb.Subscriptions[repo] = append(gb.Subscriptions[repo], room)
+		gb.SendToRoom(room, "Subscribed to: "+repo)
+	} else {
+		gb.SendToRoom(room, "This room has already subscribed to: "+repo)
 	}
 }
 
-func (gb *GiteaBot) handleCommandMakeAdmin(room, repo string) {
-	gb.SendToRoom(room, "Not implemented yet")
-}
-
 func (gb *GiteaBot) handleCommandRemoveSub(room, repo string) {
-	gb.SendToRoom(room, "Not implemented yet")
+	fmt.Println(gb.Subscriptions[repo])
+
+	if contains(gb.Subscriptions[repo], room) {
+
+		var tmp []string
+
+		for _, v := range gb.Subscriptions[repo] {
+			if v != room {
+				fmt.Println("readding '" + v + "'" + "because it is not equal to '" + room + "'")
+				tmp = append(tmp, v)
+			} else {
+				gb.SendToRoom(room, "Un-subscribed from: "+repo)
+			}
+		}
+		gb.Subscriptions[repo] = tmp
+	} else {
+		gb.SendToRoom(room, "This room has not subscribed to: "+repo)
+	}
+
 }
 
 func (gb *GiteaBot) handleCommandHelp(room string) {
