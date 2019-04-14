@@ -89,8 +89,19 @@ func (gb *GiteaBot) handleCommandListSubs(room string) {
 	gb.SendToRoom(room, msg)
 }
 
+func contains(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
+}
+
 func (gb *GiteaBot) handleCommandAddSub(room, repo string) {
-	gb.SendToRoom(room, "Not implemented yet")
+	if !contains(gb.Subscriptions[repo], room) {
+		gb.Subscriptions[repo] = append(gb.Subscriptions[repo], room)
+	}
 }
 
 func (gb *GiteaBot) handleCommandMakeAdmin(room, repo string) {
