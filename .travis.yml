@@ -11,7 +11,7 @@ go:
  #- go get github.com/mattn/goveralls
 
 script:
- - go build -x -v ./cmd/main.go
+ - go build -x -v 
  - go test -race -coverprofile=coverage.txt -covermode=atomic -a -x -v *.go
 
 notifications:
