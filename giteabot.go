@@ -46,12 +46,8 @@ func NewGiteaBot(user, pass string) *GiteaBot {
 		subs,
 	}
 
-	bot.RegisterCommand("!sub_user", 0, gbot.handleCommandAddSubRepo)
-	bot.RegisterCommand("!sub_repo", 0, gbot.handleCommandAddSubUser)
-
-	bot.RegisterCommand("!unsub_repo", 0, gbot.handleCommandRemoveSubRepo)
-	bot.RegisterCommand("!unsub_user", 0, gbot.handleCommandRemoveSubUser)
-
+	bot.RegisterCommand("!sub", 0, gbot.handleCommandAddSub)
+	bot.RegisterCommand("!unsub", 0, gbot.handleCommandRemoveSub)
 	bot.RegisterCommand("!listsubs", 0, gbot.handleCommandListSubs)
 	bot.RegisterCommand("!help", 0, gbot.handleCommandHelp)
 
@@ -122,12 +118,10 @@ I'm your friendly Gitea Bot!
 You can invite me to any matrix room to get updates on subscribed gitea repositorys.
 The following commands are avaitible:
 
-!sub_repo user/repo       Subscribe to a repository
-!sub_user user/repo       Subscribe to a user (all repos)
-!unsub_repo user/repo     Remove subscription to a repository
-!unsub_user user/repo     Remove subscription to a user
-!listsubs                 List the room's subscriptions
-!help                     Display this message
+!sub user/repo       Subscribe to a repository
+!unsub user/repo     Remove subscription to a repository
+!listsubs            List the room's subscriptions
+!help                Display this message
 
 Some of the commands might require admin powers!
 
