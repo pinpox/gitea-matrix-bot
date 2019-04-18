@@ -32,5 +32,11 @@ func init() {
 func main() {
 
 	fmt.Println("Setting up POST-listener")
+	go func() {
+		for {
+			mygiteabot.Sync()
+			// Optional: Wait a period of time before trying to sync again.
+		}
+	}()
 	setupListener()
 }
