@@ -50,7 +50,7 @@ func (dbg *GiteaDB) GetToken(room string) string {
 	}
 	defer db.Close()
 
-	stmt, err := db.Prepare("select name from foo where id = ?")
+	stmt, err := db.Prepare("select token from tokens where room = ?")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -134,17 +134,20 @@ func (dbg *GiteaDB) Set(room, token string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	fmt.Println("inserting")
+
 	stmt, err := tx.Prepare("insert into tokens(room, token) values(?, ?)")
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	defer stmt.Close()
-	for i := 0; i < 100; i++ {
-		_, err = stmt.Exec(room, token)
-		if err != nil {
-			log.Fatal(err)
-		}
+	_, err = stmt.Exec(room, token)
+	if err != nil {
+		log.Fatal(err)
 	}
 	tx.Commit()
+
+	dbg.GetAll()
 
 }
