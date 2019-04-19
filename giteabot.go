@@ -3,38 +3,39 @@ package main
 import (
 	"crypto/rand"
 	"fmt"
-	"github.com/binaryplease/matrix-bot"
+	"strings"
+
+	matrixbot "github.com/binaryplease/matrix-bot"
 )
 
 //GiteaBot is the main struct to hold the bot
 type GiteaBot struct {
 	*matrixbot.MatrixBot
-	Subscriptions map[string][]string
+	//map rooms to tokens
+	Tokens map[string]string
 }
 
-//SendMessageToRooms sends a message to all roomes that have subscribed to the repo
-func (gb *GiteaBot) SendMessageToRooms(repo, message string) {
-	for _, v := range gb.Subscriptions[repo] {
-		_, err = gb.Client.SendText(v, message)
-		if err != nil {
-			panic(err)
+func (gb *GiteaBot) Send(token, message string) {
+	for k, v := range gb.Tokens {
+		if v == token {
+			gb.SendToRoom(k, message)
 		}
 	}
 }
 
-func contains(s []string, e string) bool {
-	for _, a := range s {
-		if a == e {
-			return true
-		}
-	}
-	return false
-}
+// func contains(s []string, e string) bool {
+//	for _, a := range s {
+//		if a == e {
+//			return true
+//		}
+//	}
+//	return false
+// }
 
 //NewGiteaBot creates a new bot form user credentials
 func NewGiteaBot(user, pass string) *GiteaBot {
 
-	subs := make(map[string][]string)
+	tokens := make(map[string]string)
 
 	bot, err := matrixbot.NewMatrixBot(user, pass)
 
@@ -44,86 +45,69 @@ func NewGiteaBot(user, pass string) *GiteaBot {
 
 	gbot := &GiteaBot{
 		bot,
-		subs,
+		tokens,
 	}
 
-	bot.RegisterCommand("!sub", 0, gbot.handleCommandAddSub)
-	bot.RegisterCommand("!unsub", 0, gbot.handleCommandRemoveSub)
-	bot.RegisterCommand("!listsubs", 0, gbot.handleCommandListSubs)
-	bot.RegisterCommand("!help", 0, gbot.handleCommandHelp)
-	bot.RegisterCommand("!secret", 0, gbot.handleCommandSecret)
+	bot.RegisterCommand("!gitea help", 0, gbot.handleCommandHelp)
+	bot.RegisterCommand("!gitea secret", 0, gbot.handleCommandSecret)
+	bot.RegisterCommand("!gitea set", 0, gbot.handleCommandSet)
 
 	return gbot
 
 }
 
 func tokenGenerator() string {
-	b := make([]byte, 4)
+	//TODO make token length configurable
+	b := make([]byte, 20)
 	rand.Read(b)
 	return fmt.Sprintf("%x", b)
 }
 
+func (gb *GiteaBot) handleCommandSet(message, room, sender string) {
+
+	// Get the parameter(s) given to the command
+	args := strings.Split(message, " ")
+
+	// Display help/error if more than one argument is given
+	if len(args) != 3 {
+		gb.SendToRoom(room, "set expects exactly one argument")
+		gb.SendToRoom(room, "!gitea set <token>")
+	} else {
+		// Display help/error if the token has the wrong length
+		if len(args[2]) != 20 {
+			gb.SendToRoom(room, "Tokens have a length of 20 characters")
+		} else {
+			// If the token seems ok, set it for the room
+			gb.SendToRoom(room, "Setting token for this room to:")
+			gb.SendToRoom(room, args[2])
+			gb.Tokens[room] = args[2]
+		}
+	}
+}
+
 func (gb *GiteaBot) handleCommandSecret(message, room, sender string) {
-	//TODO
-	gb.SendToRoom(room, "NOT implemented yet")
-}
 
-func (gb *GiteaBot) handleCommandListSubs(message, room, sender string) {
-
-	repos := ""
-
-	for k, repo := range gb.Subscriptions {
-		for _, subscriber := range repo {
-			if subscriber == room {
-				repos = repos + "\n -" + k
-			}
-		}
+	//Check if room already has a token
+	if gb.Tokens[room] != "" {
+		gb.SendToRoom(room, "This room already has a token. Your secert token is:")
+		gb.SendToRoom(room, gb.Tokens[room])
+		return
 	}
 
-	if repos == "" {
-		gb.SendToRoom(room, "This room has not subscribed to any repositorys.")
-	} else {
-		msg := "This room has is subscribed to the following repositorys:" + repos
-		gb.SendToRoom(room, msg)
-	}
-}
+	token := tokenGenerator()
+	gb.Tokens[room] = token
 
-func (gb *GiteaBot) handleCommandAddSub(message string, room, sender string) {
+	gb.SendToRoom(room, "Your secert token is:")
+	gb.SendToRoom(room, token)
 
-	repo := message[5:]
-	if !contains(gb.Subscriptions[repo], room) {
-		gb.Subscriptions[repo] = append(gb.Subscriptions[repo], room)
-		gb.SendToRoom(room, "Subscribed to: "+repo)
-	} else {
-		gb.SendToRoom(room, "This room has already subscribed to: "+repo)
-	}
-}
+	gb.SendToRoom(room, "Set up a weebhook in gitea with that token as secret")
 
-func (gb *GiteaBot) handleCommandRemoveSub(message, room, sender string) {
-
-	repo := message[7:]
-	fmt.Println(gb.Subscriptions[repo])
-
-	if contains(gb.Subscriptions[repo], room) {
-
-		var tmp []string
-
-		for _, v := range gb.Subscriptions[repo] {
-			if v != room {
-				fmt.Println("readding '" + v + "'" + "because it is not equal to '" + room + "'")
-				tmp = append(tmp, v)
-			} else {
-				gb.SendToRoom(room, "Un-subscribed from: "+repo)
-			}
-		}
-		gb.Subscriptions[repo] = tmp
-	} else {
-		gb.SendToRoom(room, "This room has not subscribed to: "+repo)
-	}
-
+	//TODO change this to a real URL or make it configurable
+	gb.SendToRoom(room, "http://192.168.2.33:9000/post/")
 }
 
 func (gb *GiteaBot) handleCommandHelp(message, room, sender string) {
+	//TODO maybe make this help auto-generated for bots in general?
 	helpMsg := `
 
 I'm your friendly Gitea Bot!

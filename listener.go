@@ -38,7 +38,6 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 
 		var postData GiteaPostData
 
-		//TODO check secret!
 		//TODO check repo
 
 		json.Unmarshal(body, &postData)
@@ -50,7 +49,9 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(string(body))
 		fmt.Println("=================================================")
 		message := generateMessage(postData, r.Header.Get("X-Gitea-Event"))
-		mygiteabot.SendMessageToRooms(postData.Repository.Name, message)
+
+		// mygiteabot.SendMessageToRooms(postData.Repository.Name, message)
+		mygiteabot.Send(postData.Secret, message)
 
 		fmt.Println("=================================================")
 		fmt.Fprint(w, "POST done")
