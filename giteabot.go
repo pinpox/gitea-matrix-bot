@@ -16,14 +16,6 @@ type GiteaBot struct {
 	db     *GiteaDB
 }
 
-func (gb *GiteaBot) Send(token, message string) {
-	for k, v := range gb.Tokens {
-		if v == token {
-			gb.SendToRoom(k, message)
-		}
-	}
-}
-
 //NewGiteaBot creates a new bot form user credentials
 func NewGiteaBot(user, pass string, DBPath string) *GiteaBot {
 
@@ -41,7 +33,6 @@ func NewGiteaBot(user, pass string, DBPath string) *GiteaBot {
 	}
 
 	bot.RegisterCommand("secret", 0, "Request token for a webhook", gbot.handleCommandSecret)
-	// bot.RegisterCommand("set", 0, "Set an existing token for the room", gbot.handleCommandSet)
 	bot.RegisterCommand("reset", 0, "Delete the room's token", gbot.handleCommandReset)
 
 	return gbot
@@ -68,30 +59,9 @@ func (gb *GiteaBot) handleCommandReset(message, room, sender string) {
 	}
 }
 
-// func (gb *GiteaBot) handleCommandSet(message, room, sender string) {
-
-// 	// Get the parameter(s) given to the command
-// 	args := strings.Split(message, " ")
-
-// 	// Display help/error if more than one argument is given
-// 	if len(args) != 3 {
-// 		gb.SendToRoom(room, "set expects exactly one argument")
-// 		gb.SendToRoom(room, "!gitea set <token>")
-// 	} else {
-// 		// Display help/error if the token has the wrong length
-// 		if len(args[2]) != 20 {
-// 			gb.SendToRoom(room, "Tokens have a length of 20 characters")
-// 		} else {
-// 			// If the token seems ok, set it for the room
-// 			gb.SendToRoom(room, "Setting token for this room to:")
-// 			gb.SendToRoom(room, args[2])
-// 			gb.Tokens[room] = args[2]
-// 			gb.db.Update(gb.Tokens)
-// 		}
-// 	}
-// }
-
 func (gb *GiteaBot) handleCommandSecret(message, room, sender string) {
+
+	//TODO make the room a parameter (dont use the current room as room)
 
 	//Check if room already has a token
 	if gb.Tokens[room] != "" {
