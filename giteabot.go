@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/rand"
 	"fmt"
 	"github.com/binaryplease/matrix-bot"
 )
@@ -50,9 +51,21 @@ func NewGiteaBot(user, pass string) *GiteaBot {
 	bot.RegisterCommand("!unsub", 0, gbot.handleCommandRemoveSub)
 	bot.RegisterCommand("!listsubs", 0, gbot.handleCommandListSubs)
 	bot.RegisterCommand("!help", 0, gbot.handleCommandHelp)
+	bot.RegisterCommand("!secret", 0, gbot.handleCommandSecret)
 
 	return gbot
 
+}
+
+func tokenGenerator() string {
+	b := make([]byte, 4)
+	rand.Read(b)
+	return fmt.Sprintf("%x", b)
+}
+
+func (gb *GiteaBot) handleCommandSecret(message, room, sender string) {
+	//TODO
+	gb.SendToRoom(room, "NOT implemented yet")
 }
 
 func (gb *GiteaBot) handleCommandListSubs(message, room, sender string) {
