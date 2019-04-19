@@ -22,7 +22,7 @@ func init() {
 	matrixUser := cfg.Section("matrix").Key("matrix_user").String()
 	matrixPass := cfg.Section("matrix").Key("matrix_pass").String()
 
-	mygiteabot = NewGiteaBot(matrixUser, matrixPass)
+	mygiteabot = NewGiteaBot(matrixUser, matrixPass, "./tokens.db")
 
 	if err != nil {
 		panic(err)

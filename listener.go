@@ -8,9 +8,10 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-	"text/template"
+	"strings"
 
-	"github.com/davecgh/go-spew/spew"
+	"text/template"
+	// "github.com/davecgh/go-spew/spew"
 	// "os"
 )
 
@@ -29,6 +30,9 @@ func setupListener() {
 
 // PostHandler converts post request body to string
 func PostHandler(w http.ResponseWriter, r *http.Request) {
+
+	fmt.Println(r.URL)
+
 	if r.Method == "POST" {
 		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
@@ -38,23 +42,29 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 
 		var postData GiteaPostData
 
-		//TODO check repo
-
 		json.Unmarshal(body, &postData)
 
-		fmt.Printf("%+v\n", postData)
-		fmt.Println("=================================================")
-		spew.Dump(postData)
-		fmt.Println("=================================================")
-		fmt.Println(string(body))
-		fmt.Println("=================================================")
+		// fmt.Printf("%+v\n", postData)
+		// fmt.Println("=================================================")
+		// spew.Dump(postData)
+		// fmt.Println("=================================================")
+		// fmt.Println(string(body))
+		// fmt.Println("=================================================")
 		message := generateMessage(postData, r.Header.Get("X-Gitea-Event"))
 
-		// mygiteabot.SendMessageToRooms(postData.Repository.Name, message)
-		mygiteabot.Send(postData.Secret, message)
+		args := strings.Split(r.URL.String(), "/")
+		room := args[len(args)-1]
+		fmt.Println("Posting to room: ")
 
-		fmt.Println("=================================================")
-		fmt.Fprint(w, "POST done")
+		if mygiteabot.checkToken(room, postData.Secret) {
+			mygiteabot.SendToRoom(room, message)
+		} else {
+			fmt.Println("Wrong token for room: " + room)
+			fmt.Println("Secret: " + postData.Secret)
+		}
+
+		// fmt.Println("=================================================")
+		// fmt.Fprint(w, "POST done")
 	} else {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 	}
@@ -66,12 +76,12 @@ func generateMessage(data GiteaPostData, eventHeader string) string {
 	templ := template.New("notification")
 	var tpl bytes.Buffer
 
-	fmt.Println("======================")
+	// fmt.Println("======================")
 
-	fmt.Println(eventHeader)
-	fmt.Println(data.Action)
+	// fmt.Println(eventHeader)
+	// fmt.Println(data.Action)
 
-	fmt.Println("======================")
+	// fmt.Println("======================")
 
 	switch eventHeader {
 

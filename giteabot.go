@@ -3,7 +3,7 @@ package main
 import (
 	"crypto/rand"
 	"fmt"
-	"strings"
+	// "strings"
 
 	matrixbot "github.com/binaryplease/matrix-bot"
 )
@@ -13,6 +13,7 @@ type GiteaBot struct {
 	*matrixbot.MatrixBot
 	//map rooms to tokens
 	Tokens map[string]string
+	db     *GiteaDB
 }
 
 func (gb *GiteaBot) Send(token, message string) {
@@ -23,34 +24,25 @@ func (gb *GiteaBot) Send(token, message string) {
 	}
 }
 
-// func contains(s []string, e string) bool {
-//	for _, a := range s {
-//		if a == e {
-//			return true
-//		}
-//	}
-//	return false
-// }
-
 //NewGiteaBot creates a new bot form user credentials
-func NewGiteaBot(user, pass string) *GiteaBot {
+func NewGiteaBot(user, pass string, DBPath string) *GiteaBot {
 
-	tokens := make(map[string]string)
-
-	bot, err := matrixbot.NewMatrixBot(user, pass)
+	bot, err := matrixbot.NewMatrixBot(user, pass, "gitea")
 
 	if err != nil {
 		panic(err)
 	}
+	db := NewGiteaDB(DBPath)
 
 	gbot := &GiteaBot{
 		bot,
-		tokens,
+		db.GetAll(),
+		db,
 	}
 
-	bot.RegisterCommand("!gitea help", 0, gbot.handleCommandHelp)
-	bot.RegisterCommand("!gitea secret", 0, gbot.handleCommandSecret)
-	bot.RegisterCommand("!gitea set", 0, gbot.handleCommandSet)
+	bot.RegisterCommand("secret", 0, "Request token for a webhook", gbot.handleCommandSecret)
+	// bot.RegisterCommand("set", 0, "Set an existing token for the room", gbot.handleCommandSet)
+	bot.RegisterCommand("reset", 0, "Delete the room's token", gbot.handleCommandReset)
 
 	return gbot
 
@@ -63,27 +55,41 @@ func tokenGenerator() string {
 	return fmt.Sprintf("%x", b)
 }
 
-func (gb *GiteaBot) handleCommandSet(message, room, sender string) {
+func (gb *GiteaBot) checkToken(room, token string) bool {
+	return token == gb.db.GetToken(room)
+}
 
-	// Get the parameter(s) given to the command
-	args := strings.Split(message, " ")
+func (gb *GiteaBot) handleCommandReset(message, room, sender string) {
+	gb.db.Unset(room, gb.Tokens[room])
 
-	// Display help/error if more than one argument is given
-	if len(args) != 3 {
-		gb.SendToRoom(room, "set expects exactly one argument")
-		gb.SendToRoom(room, "!gitea set <token>")
-	} else {
-		// Display help/error if the token has the wrong length
-		if len(args[2]) != 20 {
-			gb.SendToRoom(room, "Tokens have a length of 20 characters")
-		} else {
-			// If the token seems ok, set it for the room
-			gb.SendToRoom(room, "Setting token for this room to:")
-			gb.SendToRoom(room, args[2])
-			gb.Tokens[room] = args[2]
-		}
+	_, ok := gb.Tokens[room]
+	if ok {
+		delete(gb.Tokens, room)
 	}
 }
+
+// func (gb *GiteaBot) handleCommandSet(message, room, sender string) {
+
+// 	// Get the parameter(s) given to the command
+// 	args := strings.Split(message, " ")
+
+// 	// Display help/error if more than one argument is given
+// 	if len(args) != 3 {
+// 		gb.SendToRoom(room, "set expects exactly one argument")
+// 		gb.SendToRoom(room, "!gitea set <token>")
+// 	} else {
+// 		// Display help/error if the token has the wrong length
+// 		if len(args[2]) != 20 {
+// 			gb.SendToRoom(room, "Tokens have a length of 20 characters")
+// 		} else {
+// 			// If the token seems ok, set it for the room
+// 			gb.SendToRoom(room, "Setting token for this room to:")
+// 			gb.SendToRoom(room, args[2])
+// 			gb.Tokens[room] = args[2]
+// 			gb.db.Update(gb.Tokens)
+// 		}
+// 	}
+// }
 
 func (gb *GiteaBot) handleCommandSecret(message, room, sender string) {
 
@@ -91,11 +97,13 @@ func (gb *GiteaBot) handleCommandSecret(message, room, sender string) {
 	if gb.Tokens[room] != "" {
 		gb.SendToRoom(room, "This room already has a token. Your secert token is:")
 		gb.SendToRoom(room, gb.Tokens[room])
+		gb.SendToRoom(room, "To remove all tokens of this room use !gitea reset")
 		return
 	}
 
 	token := tokenGenerator()
 	gb.Tokens[room] = token
+	gb.db.Set(room, token)
 
 	gb.SendToRoom(room, "Your secert token is:")
 	gb.SendToRoom(room, token)
@@ -103,25 +111,5 @@ func (gb *GiteaBot) handleCommandSecret(message, room, sender string) {
 	gb.SendToRoom(room, "Set up a weebhook in gitea with that token as secret")
 
 	//TODO change this to a real URL or make it configurable
-	gb.SendToRoom(room, "http://192.168.2.33:9000/post/")
-}
-
-func (gb *GiteaBot) handleCommandHelp(message, room, sender string) {
-	//TODO maybe make this help auto-generated for bots in general?
-	helpMsg := `
-
-I'm your friendly Gitea Bot!
-
-You can invite me to any matrix room to get updates on subscribed gitea repositorys.
-The following commands are avaitible:
-
-!sub user/repo       Subscribe to a repository
-!unsub user/repo     Remove subscription to a repository
-!listsubs            List the room's subscriptions
-!help                Display this message
-
-Some of the commands might require admin powers!
-
-`
-	gb.SendToRoom(room, helpMsg)
+	gb.SendToRoom(room, "http://192.168.2.33:9000/post/"+room)
 }
