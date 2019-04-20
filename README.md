@@ -14,7 +14,7 @@ Join the support channel for help and discussion:
 [#gitea-matrix-bot:matrix.org](https://matrix.to/#/#gitea-matrix-bot:matrix.org)
 
 
-# Usage of the bot
+# Usage
 If you have already an instance of this bot running somewhere or someone is already hosting it publicly (lucky you!) and just want to add it to your room, this is how to create a webhook for your repository:
 
 1. Invite the bot to the room you want it to post to
