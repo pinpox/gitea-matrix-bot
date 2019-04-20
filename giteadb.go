@@ -2,9 +2,8 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	_ "github.com/mattn/go-sqlite3"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"os"
 )
 
@@ -36,12 +35,12 @@ func (dbg *GiteaDB) Init() {
 	`
 	_, err = dbtmp.Exec(sqlStmt)
 	if err != nil {
-		log.Printf("%q: %s\n", err, sqlStmt)
+		log.Fatalf("%q: %s\n", err, sqlStmt)
 		return
 	}
-
 }
 
+//GetToken returns the token for a room, if found
 func (dbg *GiteaDB) GetToken(room string) string {
 
 	db, err := sql.Open("sqlite3", dbg.path)
@@ -87,7 +86,6 @@ func (dbg *GiteaDB) GetAll() map[string]string {
 			log.Fatal(err)
 		}
 		tokens[room] = token
-		fmt.Println(room, token)
 	}
 	err = rows.Err()
 	if err != nil {
@@ -134,7 +132,6 @@ func (dbg *GiteaDB) Set(room, token string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("inserting")
 
 	stmt, err := tx.Prepare("insert into tokens(room, token) values(?, ?)")
 	if err != nil {
@@ -147,7 +144,4 @@ func (dbg *GiteaDB) Set(room, token string) {
 		log.Fatal(err)
 	}
 	tx.Commit()
-
-	dbg.GetAll()
-
 }

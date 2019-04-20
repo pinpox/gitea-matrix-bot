@@ -3,9 +3,8 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
+	log "github.com/sirupsen/logrus"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -23,15 +22,13 @@ func setupListener() {
 	mux := http.NewServeMux()
 	mux.HandleFunc(httpURI, PostHandler)
 
-	log.Printf("listening on port %s", httpPort)
+	log.Debugf("listening on port %s", httpPort)
 	log.Fatal(http.ListenAndServe(":"+httpPort, mux))
 
 }
 
 // PostHandler converts post request body to string
 func PostHandler(w http.ResponseWriter, r *http.Request) {
-
-	fmt.Println(r.URL)
 
 	if r.Method == "POST" {
 		body, err := ioutil.ReadAll(r.Body)
@@ -44,27 +41,18 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 
 		json.Unmarshal(body, &postData)
 
-		// fmt.Printf("%+v\n", postData)
-		// fmt.Println("=================================================")
-		// spew.Dump(postData)
-		// fmt.Println("=================================================")
-		// fmt.Println(string(body))
-		// fmt.Println("=================================================")
 		message := generateMessage(postData, r.Header.Get("X-Gitea-Event"))
 
 		args := strings.Split(r.URL.String(), "/")
 		room := args[len(args)-1]
-		fmt.Println("Posting to room: ")
+		log.Debugf("Posting to room: %s", room)
 
 		if mygiteabot.checkToken(room, postData.Secret) {
 			mygiteabot.SendToRoom(room, message)
 		} else {
-			fmt.Println("Wrong token for room: " + room)
-			fmt.Println("Secret: " + postData.Secret)
+			log.Warningf("Wrong token %s for room: %s", postData.Secret, room)
 		}
 
-		// fmt.Println("=================================================")
-		// fmt.Fprint(w, "POST done")
 	} else {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 	}
@@ -76,17 +64,10 @@ func generateMessage(data GiteaPostData, eventHeader string) string {
 	templ := template.New("notification")
 	var tpl bytes.Buffer
 
-	// fmt.Println("======================")
-
-	// fmt.Println(eventHeader)
-	// fmt.Println(data.Action)
-
-	// fmt.Println("======================")
-
 	switch eventHeader {
 
 	case "push":
-		templ.Parse("{{.Pusher.FullName}} pushed " + strconv.Itoa(len(data.Commits)) + " commit(s) to {{.Repository.Name}}")
+		templ.Parse("[{{.Repository.Fullname}}] {{.Pusher.FullName}} pushed " + strconv.Itoa(len(data.Commits)) + " commit(s) to {{.Repository.Name}}")
 
 	case "issues":
 		switch data.Action {
@@ -115,7 +96,7 @@ func generateMessage(data GiteaPostData, eventHeader string) string {
 		}
 
 	case "fork":
-		templ.Parse("{{.Sender.FullName}} forked repository {{.Repository.Parent.FullName}} to {{.Repository.FullName}}")
+		templ.Parse("[{{.Repository.FullName}}] {{.Sender.FullName}} forked repository {{.Repository.Parent.FullName}} to {{.Repository.FullName}}")
 
 	case "pull_request":
 		switch data.Action {
@@ -175,19 +156,15 @@ func generateMessage(data GiteaPostData, eventHeader string) string {
 		templ.Parse("{{.Repository.FullName}}: {{.Sender.FullName}} rejected pull request  #{{.PullRequest.Number}} \"{{.PullRequest.Title}}\"")
 	case "pull_request_comment":
 		templ.Parse("{{.Repository.FullName}}: {{.Sender.FullName}} commented on pull request #{{.PullRequest.Number}} \"{{.PullRequest.Title}}\": {{.Comment.Body}}")
+
 	default:
-
-		fmt.Println("Unknown action: " + eventHeader + " " + data.Action)
+		log.Warningf("Unknown action: %s for eventHeader %s", data.Action, eventHeader)
 		templ.Parse("Gitea did something unexpected, seriously wtf was that?! Event: " + eventHeader + " Action: " + data.Action)
-
 	}
 
 	if err := templ.Execute(&tpl, data); err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	return tpl.String()
-
-	// tmplIssue, err := template.New("test").Parse("{{.User}} {{.Action}} Issue {{.IssueID}} in repository {{.Repo}}")
-
 }
