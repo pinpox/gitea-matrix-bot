@@ -5,7 +5,7 @@
 
 
 
-# gitea-matrix-bot (WORK IN PROGRESS, ALPHA!)
+# gitea-matrix-bot (WORK IN PROGRESS!)
 
 A bot to listen for [gitea](https://gitea.io) webhooks and post to a [matrix](https://matrix.org) channel
 
@@ -19,17 +19,23 @@ following options:
 [http]
 # The path the listener will expect the post data
 http_uri = "/post"
-
 # The port the listener will listen on
 http_port = "9000"
+
 
 [matrix]
 # The matrix server to connect to
 matrix_host = "http://matrix.org"
-
+# The matrix room to post to
+matrix_room = "#my-awesome-room:matrix.org"
 # User credentions of the bot for posting to the room
 matrix_pass = "supersecretpass"
 matrix_user = "my-awesome-bot"
+
+
+[bot]
+# Path of the database to be used
+db_path = "./tokens.db"
 ```
 
 Then start the bot. It will listen on the configured URI for incoming gitea
