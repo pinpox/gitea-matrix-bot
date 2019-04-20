@@ -12,7 +12,7 @@ A bot to listen for [gitea](https://gitea.io) webhooks and post to a [matrix](ht
 # Usage
 
 ## Configuration
-Copy config.ini.example to config.ini or creat a file called config.ini with the
+Copy config.ini.example to config.ini or create a file called config.ini with the
 following options:
 
 ```ini
@@ -43,16 +43,7 @@ hooks.
 
 ## Create gitea hook
 
-Create a new webhook in gitea. You an add a webhook to a single repository or
-add a default webhook that will apply to all you repos (recommended)
 
-- Choose the Webhook type `Gitea` for you Webhook
-- Configure which events you want to send. You can also select `All Events`
-- Set the Target URL to your host + the value you configured in the `config.ini` file. (e.g. `http://myserver:9000/post`)
-- Make sure that port is reachable/forwarded if you are behind a router and
-	check your firewall
-- Set `POST Content Type` to `applicatino/json`
-- Add a secret (passphrase, password)
 
 It will probably look like this:
 ![gitea scrot](./gitea-scrot.png "Gitea Screenshot")
