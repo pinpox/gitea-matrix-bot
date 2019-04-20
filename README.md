@@ -53,6 +53,18 @@ matrix_user = "my-awesome-bot"
 # Path of the database to be used
 db_path = "./tokens.db"
 ```
+If the database does not exist yet (your running the bot for the first time) you will have to use the `--initdb` flag to create it. This will create a sqlite3 database at the configured location with the expected table. 
 
-Then start the bot. It will listen on the configured URI for incoming gitea
-hooks.
+The following flags are avaitible for this bot:
+
+```
+Flags:
+      --help                 Show context-sensitive help (also try --help-long and --help-man).
+  -v, --verbose              Verbose mode, displays additional information.
+  -c, --config="config.ini"  Configuration file to use
+      --initdb               Initialize the database. If it exists, it will be overwritten!
+      --sync=1               Matrix synchronizing interval
+      --version              Show application version.
+```
+
+If everything went fine your gitea bot is now up and running! Make sure the configured port is open and the address reachable from the gitea server!
