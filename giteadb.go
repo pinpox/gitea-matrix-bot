@@ -14,8 +14,16 @@ type GiteaDB struct {
 
 //NewGiteaDB returns a new GiteaDB
 func NewGiteaDB(path string) *GiteaDB {
+
 	db := &GiteaDB{path}
-	db.Init()
+
+	if *initDBFlag {
+		log.Debugf("Using Database: %s (will be created/overwritten)", db.path)
+		db.Init()
+	} else {
+		log.Debugf("Using database: %s will be used (already existing)", db.path)
+	}
+
 	return db
 }
 

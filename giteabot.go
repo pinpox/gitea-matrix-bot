@@ -52,6 +52,7 @@ func (gb *GiteaBot) checkToken(room, token string) bool {
 
 func (gb *GiteaBot) handleCommandSecret(message, room, sender string) {
 
+	//Check if a parameter was supplied (room for which to generate the token)
 	msgParts := strings.Split(message, " ")
 	if len(msgParts) != 3 {
 		gb.SendToRoom(room, "!gitea secert expects exactly on parameter, a room for which to request a token.\n Usage: !gitea secret <room id> \n\n e.g. !gitea secert !FoJFjcBoIJyKuPnDFf:matrix.org")
@@ -60,30 +61,31 @@ func (gb *GiteaBot) handleCommandSecret(message, room, sender string) {
 
 	reqRoom := msgParts[2]
 
+	//Basic check if the roomID is properly formatted. The user might mistake it for the alias or address
 	if !strings.HasPrefix(reqRoom, "!") {
 		gb.SendToRoom(room, "Room IDs start with an exclamation mark\n\n e.g. !gitea secert !FoJFjcBoIJyKuPnDFf:matrix.org \n\n This is *not* the same as the rooms name or alias!")
 		return
 	}
 
-	//Check if room already has a token
+	//Check if room already has a token, if so display it.
 	if gb.Tokens[reqRoom] != "" {
 		gb.SendToRoom(room, "This room already has a token. Your secert token is:")
 		gb.SendToRoom(room, gb.Tokens[reqRoom])
 		return
 	}
 
+	// If everything is fine, generate a token and add it to the db
 	token := tokenGenerator()
 	gb.Tokens[reqRoom] = token
 	gb.db.Set(reqRoom, token)
 
+	//Print the token and help to the room it was requested from
 	gb.SendToRoom(room, "Your secert token is:")
 	gb.SendToRoom(room, token)
-
 	gb.SendToRoom(room, "Now, set up a weebhook in gitea with that token as secret")
 
 	httpHost := cfg.Section("http").Key("http_host").String()
 	httpPort := cfg.Section("http").Key("http_port").String()
 	httpURI := cfg.Section("http").Key("http_uri").String()
-
 	gb.SendToRoom(room, httpHost+":"+httpPort+httpURI+room)
 }
