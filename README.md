@@ -9,6 +9,9 @@
 
 A bot to listen for [gitea](https://gitea.io) webhooks and post to a [matrix](https://matrix.org) channel
 
+Join the support channel for help and discussion:
+[https://matrix.to/#/#gitea-matrix-bot:matrix.org](https://matrix.to/#/#gitea-matrix-bot:matrix.org)
+
 # Usage
 
 ## Configuration
