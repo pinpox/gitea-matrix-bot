@@ -13,9 +13,21 @@ This bot was build using my [bot framework](https://github.com/binaryplease/matr
 Join the support channel for help and discussion:
 [#gitea-matrix-bot:matrix.org](https://matrix.to/#/#gitea-matrix-bot:matrix.org)
 
-# Usage
 
-## Configuration
+# Usage of the bot
+If you have already an instance of this bot running somewhere or someone is already hosting it publicly (lucky you!) and just want to add it to your room, this is how to create a webhook for your repository:
+
+1. Invite the bot to the room you want it to post to
+2. Find your room's id. This is **not** the name or adress! It starts with an exclamation mark and has a format like this`!DYgXKezaHgMbiPMzjX:matrix.org`
+3. Use the room ID to request a token from the bot `!gitea secret !DYgXKezaHgMbiPMzjX:matrix.org`. You can issue this command in a different room or private chat if you want to keep it secret if the room you're adding the bot to has members that are not supposed to view the token
+4. The bot will reply to you with instructions on how to set up the gitea webhook. Set up a webhook of type `gitea` with the url provided and use the token as secret. Select the specific types of events you want to be notified on or select "All Events"
+
+It will probably look like this:
+![gitea scrot](./gitea-scrot.png "Gitea Screenshot")
+
+# Installation
+To host the bot yourself, you will need to have a valid account on a matrix server and  create a configuration file.
+
 Copy config.ini.example to config.ini or create a file called config.ini with the
 following options:
 
@@ -44,10 +56,3 @@ db_path = "./tokens.db"
 
 Then start the bot. It will listen on the configured URI for incoming gitea
 hooks.
-
-## Create gitea hook
-
-
-
-It will probably look like this:
-![gitea scrot](./gitea-scrot.png "Gitea Screenshot")
