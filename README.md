@@ -11,10 +11,9 @@ A bot to listen for [gitea](https://gitea.io) webhooks and post to a [matrix](ht
 This bot was build using my [bot framework](https://github.com/binaryplease/matrix-bot/). If you stumble upon bugs on any of them please let me know!
 
 
-#### Status
+##### Status
 This project is still in beta! You may encouter bugs, be sure to
 **report them** so they can be fixed!
-
 Join the support channel for help and discussion:
 [#gitea-matrix-bot:matrix.org](https://matrix.to/#/#gitea-matrix-bot:matrix.org)
 
