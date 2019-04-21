@@ -2,8 +2,7 @@
 [![GoDoc](https://godoc.org/github.com/binaryplease/gitea-matrix-bot?status.svg)](https://godoc.org/github.com/binaryplease/gitea-matrix-bot)
 [![Go Report Card](https://goreportcard.com/badge/github.com/binaryplease/gitea-matrix-bot)](https://goreportcard.com/report/github.com/binaryplease/gitea-matrix-bot)
 [![codecov](https://codecov.io/gh/binaryplease/gitea-matrix-bot/branch/master/graph/badge.svg)](https://codecov.io/gh/binaryplease/gitea-matrix-bot)
-![Matrix](https://img.shields.io/matrix/gitea-matrix-bot:matrix.org.svg?style=plastic)
-
+![Matrix](https://img.shields.io/matrix/gitea-matrix-bot:matrix.org.svg)
 
 
 # gitea-matrix-bot
