@@ -14,6 +14,9 @@ Join the support channel for help and discussion:
 [#gitea-matrix-bot:matrix.org](https://matrix.to/#/#gitea-matrix-bot:matrix.org)
 
 
+Status: This project is still in beta! You may encouter bugs, be sure to
+**report them** so they can be fixed!
+
 # Usage
 If you have already an instance of this bot running somewhere or someone is already hosting it publicly (lucky you!) and just want to add it to your room, this is how to create a webhook for your repository:
 
@@ -75,5 +78,5 @@ If you would like to help you are **very welcome**, please submit
 pull-requests!
 
 Also, I'm looking for testers and bugs in the code. If you hit a problem, please
-be sure to report it so it can be fixed. You can open an issue ticket or contact
-me in the room liked above.
+be sure to report it so it can be fixed. You can **open an issue** ticket or **contact
+me** in the room liked above.
