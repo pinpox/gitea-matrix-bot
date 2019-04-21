@@ -68,3 +68,12 @@ Flags:
 ```
 
 If everything went fine your gitea bot is now up and running! Make sure the configured port is open and the address reachable from the gitea server!
+
+# Contributing
+
+If you would like to help you are **very welcome**, please submit
+pull-requests!
+
+Also, I'm looking for testers and bugs in the code. If you hit a problem, please
+be sure to report it so it can be fixed. You can open an issue ticket or contact
+me in the room liked above.
