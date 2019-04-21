@@ -4,12 +4,13 @@
 [![codecov](https://codecov.io/gh/binaryplease/gitea-matrix-bot/branch/master/graph/badge.svg)](https://codecov.io/gh/binaryplease/gitea-matrix-bot)
 ![Matrix](https://img.shields.io/matrix/gitea-matrix-bot:matrix.org.svg)
 
-<p align="center">
-<img src="https://github.com/binaryplease/gitea-matrix-bot/raw/master/logo.png" width="300" height="300" /></p>
-
 
 # gitea-matrix-bot
 A bot to listen for [gitea](https://gitea.io) webhooks and post to a [matrix](https://matrix.org) channel
+
+<p align="center">
+<img src="https://github.com/binaryplease/gitea-matrix-bot/raw/master/logo.png" width="300" height="300" />
+</p>
 
 This bot was build using my [bot framework](https://github.com/binaryplease/matrix-bot/). If you stumble upon bugs on any of them please let me know!
 
