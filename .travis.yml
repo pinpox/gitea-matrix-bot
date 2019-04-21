@@ -7,8 +7,11 @@ go:
 
 # Required for coverage, and testing.
 #before_install:
-# - go get golang.org/x/tools/cmd/cover
- #- go get github.com/mattn/goveralls
+ - go get golang.org/x/tools/cmd/cover
+ - go get github.com/mattn/goveralls
+ - go get github.com/binaryplease/matrix-bot
+ - go get gopkg.in/alecthomas/kingpin.v2
+
 
 script:
  - go build -x -v 
