@@ -18,4 +18,6 @@ matrix_user = "my-awesome-bot"
 [bot]
 # Path of the database to be used
 db_path = "./tokens.db"
+# message type: 'html' or 'plain'
+message_type = "html"
 

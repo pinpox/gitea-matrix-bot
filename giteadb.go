@@ -29,6 +29,8 @@ func NewGiteaDB(path string) *GiteaDB {
 
 //Init initializes the db, if it exists in the path it will be overwritten
 func (dbg *GiteaDB) Init() {
+
+	log.Debugf("Initializing DB in %s", dbg.path)
 	os.Remove(dbg.path)
 
 	dbtmp, err := sql.Open("sqlite3", dbg.path)
@@ -51,6 +53,8 @@ func (dbg *GiteaDB) Init() {
 //GetToken returns the token for a room, if found
 func (dbg *GiteaDB) GetToken(room string) string {
 
+	log.Debugf("Getting token for room %s", room)
+
 	db, err := sql.Open("sqlite3", dbg.path)
 	if err != nil {
 		log.Fatal(err)
@@ -66,14 +70,19 @@ func (dbg *GiteaDB) GetToken(room string) string {
 	var token string
 	err = stmt.QueryRow(room).Scan(&token)
 	if err != nil {
-		log.Fatal(err)
+		log.Debug("No token found!")
+		return ""
 	}
+
+	log.Debugf("Found token: %s", token)
 	return token
 }
 
 //GetAll returns all existing rooms with token
 func (dbg *GiteaDB) GetAll() map[string]string {
 	tokens := make(map[string]string)
+
+	log.Debugf("Retrieving all tokens from %s", dbg.path)
 
 	db, err := sql.Open("sqlite3", dbg.path)
 	if err != nil {
@@ -99,6 +108,8 @@ func (dbg *GiteaDB) GetAll() map[string]string {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	log.Debugf("Found %v tokens", len(tokens))
 
 	return tokens
 
