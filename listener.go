@@ -52,10 +52,18 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 
 			//TODO check for configured message type
 
-			messageText := generateTextMessage(postData, r.Header.Get("X-Gitea-Event"))
+			messageText, err := generateTextMessage(postData, r.Header.Get("X-Gitea-Event"))
+			if err != nil {
+				log.Warning(err)
+				log.Warning(postData)
+			}
 			switch msgType {
 			case "html":
-				messageHTML := generateHTMLMessage(postData, r.Header.Get("X-Gitea-Event"))
+				messageHTML, err := generateHTMLMessage(postData, r.Header.Get("X-Gitea-Event"))
+				if err != nil {
+					log.Warning(err)
+					log.Warning(postData)
+				}
 				mygiteabot.SendHTMLToRoom(room, messageHTML, messageText)
 			case "plain":
 				mygiteabot.SendTextToRoom(room, messageText)
@@ -73,7 +81,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 //generateTextMessage generates the message string for a given event
-func generateHTMLMessage(data GiteaPostData, eventHeader string) string {
+func generateHTMLMessage(data GiteaPostData, eventHeader string) (string, error) {
 
 	templHeader := `<h3><a href="{{.Repository.HTMLURL}}"><b><span data-mx-color="#000000">[{{.Repository.FullName}}]</span></b></a></h3>`
 
@@ -155,14 +163,15 @@ func generateHTMLMessage(data GiteaPostData, eventHeader string) string {
 	}
 
 	if err := templ.Execute(&tpl, data); err != nil {
-		log.Fatal(err)
+		log.Warningf("Failed to generate text-message for eventHeader %v", eventHeader)
+		return "", err
 	}
 
-	return tpl.String()
+	return tpl.String(), nil
 }
 
 //generateTextMessage generates the message string for a given event
-func generateTextMessage(data GiteaPostData, eventHeader string) string {
+func generateTextMessage(data GiteaPostData, eventHeader string) (string, error) {
 
 	templ := template.New("notification")
 	var tpl bytes.Buffer
@@ -231,8 +240,9 @@ func generateTextMessage(data GiteaPostData, eventHeader string) string {
 	}
 
 	if err := templ.Execute(&tpl, data); err != nil {
-		log.Fatal(err)
+		log.Warningf("Failed to generate text-message for eventHeader %v", eventHeader)
+		return "", err
 	}
 
-	return tpl.String()
+	return tpl.String(), nil
 }
