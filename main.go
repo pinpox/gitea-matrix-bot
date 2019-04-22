@@ -47,10 +47,11 @@ func init() {
 
 	matrixUser := cfg.Section("matrix").Key("matrix_user").String()
 	matrixPass := cfg.Section("matrix").Key("matrix_pass").String()
+	matrixHost := cfg.Section("matrix").Key("matrix_pass").String()
 	dbPath := cfg.Section("bot").Key("db_path").String()
 
 	//Set up the bot
-	mygiteabot = NewGiteaBot(matrixUser, matrixPass, dbPath)
+	mygiteabot = NewGiteaBot(matrixUser, matrixPass, matrixHost, dbPath)
 
 	if err != nil {
 		log.Fatal(err)

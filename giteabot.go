@@ -18,7 +18,7 @@ type GiteaBot struct {
 }
 
 //NewGiteaBot creates a new bot form user credentials
-func NewGiteaBot(user, pass string, DBPath string) *GiteaBot {
+func NewGiteaBot(user, pass, host, string, DBPath string) *GiteaBot {
 
 	bot, err := matrixbot.NewMatrixBot(user, pass, "gitea")
 
