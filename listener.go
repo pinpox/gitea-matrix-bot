@@ -55,14 +55,14 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 			messageText, err := generateTextMessage(postData, r.Header.Get("X-Gitea-Event"))
 			if err != nil {
 				log.Warning(err)
-				log.Warning(postData)
+				log.Warningf("%s", body)
 			}
 			switch msgType {
 			case "html":
 				messageHTML, err := generateHTMLMessage(postData, r.Header.Get("X-Gitea-Event"))
 				if err != nil {
 					log.Warning(err)
-					log.Warning(postData)
+					log.Warningf("%s", body)
 				}
 				mygiteabot.SendHTMLToRoom(room, messageHTML, messageText)
 			case "plain":
@@ -177,7 +177,7 @@ func generateTextMessage(data GiteaPostData, eventHeader string) (string, error)
 	var tpl bytes.Buffer
 
 	mesgTemplates := map[string]string{
-		"push":                       "[{{.Repository.Fullname}}] {{.Pusher.FullName}} pushed " + strconv.Itoa(len(data.Commits)) + " commit(s) to {{.Repository.Name}}",
+		"push":                       "[{{.Repository.Fullname}}]: {{.Pusher.FullName}} pushed " + strconv.Itoa(len(data.Commits)) + " commit(s) to {{.Repository.Name}}",
 		"issues.assigned":            "[{{.Repository.FullName}}]: {{.Sender.FullName}} assigned issue #{{.Issue.Number}} {{.Issue.Title}} to  {{}}",
 		"issues.closed":              "[{{.Repository.FullName}}]: {{.Sender.FullName}} closed issue #{{.Issue.Number}} {{.Issue.Title}}",
 		"issues.demilestoned":        "[{{.Repository.FullName}}]: {{.Sender.FullName}} removed milestone TODO from issue #{{.Issue.Number}} {{.Issue.Title}}",
