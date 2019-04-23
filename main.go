@@ -51,6 +51,8 @@ func init() {
 	dbPath := cfg.Section("bot").Key("db_path").String()
 
 	//Set up the bot
+
+	// func NewGiteaBot(user, pass, host, string, DBPath string) *GiteaBot {
 	mygiteabot = NewGiteaBot(matrixUser, matrixPass, matrixHost, dbPath)
 
 	if err != nil {
