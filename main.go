@@ -3,7 +3,8 @@ package main
 import (
 	// "fmt"
 	"github.com/go-ini/ini"
-	"gopkg.in/alecthomas/kingpin.v2"
+	"github.com/alecthomas/kingpin/v2"
+
 	"time"
 	// "time"
 	log "github.com/sirupsen/logrus"

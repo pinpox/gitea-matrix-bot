@@ -9,7 +9,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-//GiteaBot is the main struct to hold the bot
+// GiteaBot is the main struct to hold the bot
 type GiteaBot struct {
 	*matrixbot.MatrixBot
 	//map rooms to tokens
@@ -17,10 +17,10 @@ type GiteaBot struct {
 	db     *GiteaDB
 }
 
-//NewGiteaBot creates a new bot form user credentials
+// NewGiteaBot creates a new bot form user credentials
 func NewGiteaBot(user, pass, host string, DBPath string) *GiteaBot {
 
-	bot, err := matrixbot.NewMatrixBot(user, pass, "gitea")
+	bot, err := matrixbot.NewMatrixBot(user, pass, host, "gitea")
 
 	if err != nil {
 		log.Fatal(err)
