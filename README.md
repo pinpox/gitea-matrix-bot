@@ -1,17 +1,17 @@
-[![Build Status](https://travis-ci.org/binaryplease/gitea-matrix-bot.svg?branch=master)](https://travis-ci.org/binaryplease/gitea-matrix-bot)
-[![GoDoc](https://godoc.org/github.com/binaryplease/gitea-matrix-bot?status.svg)](https://godoc.org/github.com/binaryplease/gitea-matrix-bot)
-[![Go Report Card](https://goreportcard.com/badge/github.com/binaryplease/gitea-matrix-bot)](https://goreportcard.com/report/github.com/binaryplease/gitea-matrix-bot)
-[![codecov](https://codecov.io/gh/binaryplease/gitea-matrix-bot/branch/master/graph/badge.svg)](https://codecov.io/gh/binaryplease/gitea-matrix-bot)
+[![Build Status](https://travis-ci.org/pinpox/gitea-matrix-bot.svg?branch=master)](https://travis-ci.org/pinpox/gitea-matrix-bot)
+[![GoDoc](https://godoc.org/github.com/pinpox/gitea-matrix-bot?status.svg)](https://godoc.org/github.com/pinpox/gitea-matrix-bot)
+[![Go Report Card](https://goreportcard.com/badge/github.com/pinpox/gitea-matrix-bot)](https://goreportcard.com/report/github.com/pinpox/gitea-matrix-bot)
+[![codecov](https://codecov.io/gh/pinpox/gitea-matrix-bot/branch/master/graph/badge.svg)](https://codecov.io/gh/pinpox/gitea-matrix-bot)
 ![Matrix](https://img.shields.io/matrix/gitea-matrix-bot:matrix.org.svg?label=%23gitea-matrix-bot%3Amatrix.org)
 
 # gitea-matrix-bot
 A bot to listen for [gitea](https://gitea.io) webhooks and post to a [matrix](https://matrix.org) channel
 
 <p align="center">
-<img src="https://github.com/binaryplease/gitea-matrix-bot/raw/master/logo.png" width="300" height="300" />
+<img src="https://github.com/pinpox/gitea-matrix-bot/raw/master/logo.png" width="300" height="300" />
 </p>
 
-This bot was build using my [bot framework](https://github.com/binaryplease/matrix-bot/). If you stumble upon bugs on any of them please let me know!
+This bot was build using my [bot framework](https://github.com/pinpox/matrix-bot/). If you stumble upon bugs on any of them please let me know!
 
 
 ##### Status

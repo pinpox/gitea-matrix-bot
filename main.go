@@ -48,7 +48,7 @@ func init() {
 
 	matrixUser := cfg.Section("matrix").Key("matrix_user").String()
 	matrixPass := cfg.Section("matrix").Key("matrix_pass").String()
-	matrixHost := cfg.Section("matrix").Key("matrix_pass").String()
+	matrixHost := cfg.Section("matrix").Key("matrix_host").String()
 	dbPath := cfg.Section("bot").Key("db_path").String()
 
 	//Set up the bot

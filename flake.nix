@@ -32,7 +32,7 @@
             version = "master";
             src = ./.;
             vendorSha256 =
-              "sha256-Kce1ky4orC8pPSEUAbOeW/O2S4ThtOLdYIPaXfKGHA4=";
+              "sha256-4g/pUJ0gGYj6Y3rDINZBbcrEwloA5QCLdviECB1QrIQ=";
 
             # TODO fix tests
             doCheck = false;

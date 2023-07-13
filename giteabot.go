@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	matrixbot "github.com/binaryplease/matrix-bot"
+	matrixbot "github.com/pinpox/matrix-bot"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -20,10 +20,11 @@ type GiteaBot struct {
 // NewGiteaBot creates a new bot form user credentials
 func NewGiteaBot(user, pass, host string, DBPath string) *GiteaBot {
 
+	log.Info("Creating bot")
 	bot, err := matrixbot.NewMatrixBot(user, pass, host, "gitea")
 
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Failed to create bot", err)
 	}
 	db := NewGiteaDB(DBPath)
 

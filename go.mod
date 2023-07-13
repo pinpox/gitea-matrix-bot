@@ -4,9 +4,9 @@ go 1.20
 
 require (
 	github.com/alecthomas/kingpin/v2 v2.3.2
-	github.com/binaryplease/matrix-bot v0.0.0-20190422182545-e58f16f86ca7
 	github.com/go-ini/ini v1.67.0
 	github.com/mattn/go-sqlite3 v1.14.17
+	github.com/pinpox/matrix-bot v0.0.0-20190422182545-e58f16f86ca7
 	github.com/sirupsen/logrus v1.9.3
 )
 
