@@ -31,7 +31,7 @@
             pname = "gitea-matrix-bot";
             version = "master";
             src = ./.;
-            vendorSha256 =
+            vendorHash =
               "sha256-4g/pUJ0gGYj6Y3rDINZBbcrEwloA5QCLdviECB1QrIQ=";
 
             # TODO fix tests
